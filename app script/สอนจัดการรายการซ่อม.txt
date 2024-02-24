@@ -1,0 +1,31 @@
+function doGet(request){
+    var ss = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/1QRiEW32LvvfDascI3oMDaB1rMS-MhPpNw5GT2cA4mhg/edit?usp=sharing")
+    var sheet = ss.getSheetByName('ข้อมูลแจ้งซ่อม')
+
+    var name = request.parameter.name;
+    //var name = "มอส1"
+    var reason = request.parameter.reason; // แก้ชื่อพารามิเตอร์เป็น reason
+    //var reason ="ทำการซ่อมแล้ว"
+
+    
+
+    // หากต้องการอัพเดตเฉพาะ reason ตาม name ที่ระบุ
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+        if (data[i][0] === name) {
+            sheet.getRange(i + 1, 4).setValue(reason); // ปรับค่า reason ในแถวที่พบ name
+            break; // หยุดการทำงานเมื่อพบ name และอัพเดตข้อมูลเรียบร้อยแล้ว
+        }
+    }
+
+    // สร้าง response สำหรับผู้ใช้
+    var result = {}
+    result.result = 'updated' // อัพเดตข้อมูลเรียบร้อย
+
+    // แปลง object เป็น JSON string
+    var resultJSON = JSON.stringify(result);
+
+    // สร้าง response ในรูปแบบของ JSON
+    return ContentService.createTextOutput(resultJSON).setMimeType(ContentService.MimeType.JSON);
+}
+//?name=<<name>>&reason=<<reason>>

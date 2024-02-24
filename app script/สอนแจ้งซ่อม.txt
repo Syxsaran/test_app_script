@@ -1,0 +1,24 @@
+function doGet(request){
+    var ss = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/1QRiEW32LvvfDascI3oMDaB1rMS-MhPpNw5GT2cA4mhg/edit?usp=sharing")
+     var sheet = ss.getSheetByName('ข้อมูลแจ้งซ่อม')
+
+     var name = request.parameter.name
+     var number = request.parameter.number
+     var location = request.parameter.location
+     var reason = request.parameter.reason
+
+     //var name = "ggg"
+     //var number = "aaa"
+     //var location = "sss"
+     //var reason = "sssqw"
+
+     sheet.appendRow([name, number, location, reason]);
+     var result = {}
+     result.result = 'added' //แอดข้อมูลเรียบน้อย
+     
+    //console.log(result)
+
+     var result = JSON.stringify(result);
+     return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.JSON);
+}
+//?name=<<name>>&number=<<number>>&location=<<location>>&reason=<<reason>>

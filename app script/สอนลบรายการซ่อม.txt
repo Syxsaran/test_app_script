@@ -1,0 +1,32 @@
+function doGet(request) {
+  var ss = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/1QRiEW32LvvfDascI3oMDaB1rMS-MhPpNw5GT2cA4mhg/edit?usp=sharing")
+  var sheet = ss.getSheetByName('ข้อมูลแจ้งซ่อม');
+  
+  var name = request.parameter.name;
+  //var name = "มอส8"
+
+  // Call the deleteVote function to remove the vote for the specified name
+  // เรียกใช้ฟังก์ชัน DeleteVote เพื่อลบการลงคะแนนสำหรับ name ที่ระบุ
+  var deleteResult = deleteVote(sheet, name);
+
+  var result = {};
+  result.result = deleteResult ? 'deleted' : 'not found';
+  var resultJSON = JSON.stringify(result);
+  return ContentService.createTextOutput(resultJSON).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Function to delete a vote based on name
+// ฟังก์ชั่นลบการลงคะแนนตาม name
+function deleteVote(sheet, name) {
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === name) {
+      // ลบแถวหากพบ name
+      sheet.deleteRow(i + 1);
+      return true; // คืนค่าเป็นจริงเพื่อระบุการลบสำเร็จ
+    }
+  }
+  return false; // ส่งคืนค่าเท็จหากไม่พบ name
+}
+
+//?name=<<name>>&number=<<number>>&location=<<location>>&reason=<<reason>>

@@ -1,0 +1,348 @@
+function getproductdata(category='ชำรุดต้องการการซ่อมบำรุง'){
+  var sheeturl = 'https://docs.google.com/spreadsheets/d/1QRiEW32LvvfDascI3oMDaB1rMS-MhPpNw5GT2cA4mhg/edit?usp=sharing'
+  var sheetname = 'ข้อมูลแจ้งซ่อม'
+  var psheet = gspandas.gsdataframe(sheeturl,sheetname)
+  var pinfo = psheet.getrowdict('เหตุผลในการซ่อม',category)
+   Logger.log(pinfo)
+    for (var i = 0; i < pinfo.length; i++) {
+      Logger.log(pinfo[i])
+   }
+  return pinfo
+}
+
+
+function genproductflex(category,ncol=3){
+  var pdata = getproductdata(category)
+  // เอาตามความยาวที่มีอยู่ในชีต
+  var ncol = pdata.length
+  var pflex = getmultipleflex(pdata,ncol)
+  Logger.log(pdata.length)
+
+
+  return pflex
+}
+
+
+function getproductflex(p_name, p_number, p_location, p_reason, altText = 'This is a Flex Message') {
+  var flextemplate = {
+  "type": "bubble",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "รายการ",
+        "weight": "bold",
+        "size": "xl"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "lg",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "ชื่อผู้แจ้งซ่อม",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": p_name,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "เบอร์โทร",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": p_number,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "ตำแหน่ง",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": p_location,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "เหตุผล",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": p_reason,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+};
+
+  var lineres = {
+    'type': 'flex',
+    'altText': altText,
+    'contents': flextemplate
+  };
+
+  var lr = {
+    "line_payload": [
+      lineres
+    ],
+    "response_type": "object"
+  };
+  return lr;
+}
+
+
+function doGet(request){
+ // Change Spread Sheet url
+ var category = request.parameter.category
+ var ncol = request.parameter.ncol
+ // Logger.log(category,ncol)
+ var result = genproductflex(category,ncol)
+ // Logger.log(jo)
+ result = JSON.stringify(result);
+ return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+function getmenuflex(m_name,m_number,m_location,m_reason){
+
+
+    var flextemplate =
+    {
+  "type": "bubble",
+  "action": {
+          "type": "message",
+          "label": "action",
+          "text": m_name
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "lg",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "ชื่อผู้แจ้งซ่อม",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": m_name,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "เบอร์โทร",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": m_number,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "ตำแหน่ง",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": m_location,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "เหตุผล",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": m_reason,
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "backgroundColor": "#FFF0F5",
+    "spacing": "none",
+    "margin": "none"
+  }
+}
+
+
+return flextemplate
+}
+
+
+function getrowmenu(mlist){
+  var mltemp = []
+  for (let m in mlist){
+    let m_name = mlist[m]['menu_name']
+    let m_number = mlist[m]['menu_number']
+    let m_location = mlist[m]['menu_location']
+    let m_reason = mlist[m]['menu_reason']
+    var mtemp = getmenuflex(m_name,m_number,m_location,m_reason)
+    mltemp.push(mtemp)
+    //Logger.log(mtemp)
+
+
+  }
+  return mltemp
+}
+
+
+
+
+function getmultipleflex(mlist, ncol = 1) {
+  let nrow = Math.ceil(mlist.length / ncol); // คำนวณหาจำนวนแถวที่จำเป็นต้องสร้าง
+  let lpayloadList = [];
+  let startIdx = 0;
+
+  for (let i = 0; i < nrow; i++) {
+    let mltemp = [];
+    for (let j = 0; j < ncol; j++) {
+      let idx = startIdx + j;
+      if (idx < mlist.length) {
+        let m_name = mlist[idx]['ชื่อผู้แจ้งซ่อม'];
+        let m_number = mlist[idx]['เบอร์โทร'];
+        let m_location = mlist[idx]['ตำแหน่ง'];
+        let m_reason = mlist[idx]['เหตุผลในการซ่อม'];
+        let mtemp = getmenuflex(m_name, m_number, m_location, m_reason);
+        mltemp.push(mtemp);
+      }
+    }
+    startIdx += ncol;
+    let flextemplate = {
+      "type": "carousel",
+      "contents": mltemp
+    };
+
+    let lineres = {
+      "type": "flex",
+      "altText": "This is Flex message",
+      "contents": flextemplate
+    };
+    lpayloadList.push(lineres);
+  }
+
+  let lr = {
+    "line_payload": lpayloadList,
+    "response_type": "object"
+  };
+  return lr;
+}
+
+
